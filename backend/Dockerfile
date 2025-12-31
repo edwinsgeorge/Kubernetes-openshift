@@ -1,5 +1,5 @@
-# Backend Dockerfile
-FROM node:18-alpine
+# Signaling Server Dockerfile (Node.js)
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -7,13 +7,17 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci --only=production
 
-# Copy source code
+# Copy application code
 COPY . .
 
 # Expose port
 EXPOSE 5000
 
-# Start the server
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:5000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Run the application
 CMD ["node", "server.js"]
