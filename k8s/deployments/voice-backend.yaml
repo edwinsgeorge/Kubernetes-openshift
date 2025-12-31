@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voice-backend
+  namespace: emergency-call-center
+  labels:
+    app: voice-backend
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: voice-backend
+  template:
+    metadata:
+      labels:
+        app: voice-backend
+        tier: backend
+    spec:
+      containers:
+      - name: voice-backend
+        image: your-registry/voice-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        # From ConfigMap
+        - name: SARVAM_STT_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: SARVAM_STT_URL
+        - name: SARVAM_TTS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: SARVAM_TTS_URL
+        - name: ML_ROUTING_URL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: ML_ROUTING_URL
+        - name: TARGET_LANGUAGE_CODE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: TARGET_LANGUAGE_CODE
+        # From Secrets
+        - name: SARVAM_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: SARVAM_API_KEY
+        - name: GROQ_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: GROQ_API_KEY
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: DATABASE_URL
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

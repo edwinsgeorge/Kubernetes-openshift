@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signaling-server
+  namespace: emergency-call-center
+  labels:
+    app: signaling-server
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: signaling-server
+  template:
+    metadata:
+      labels:
+        app: signaling-server
+        tier: backend
+    spec:
+      containers:
+      - name: signaling-server
+        image: your-registry/signaling-server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5

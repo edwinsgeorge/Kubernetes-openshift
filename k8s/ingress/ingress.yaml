@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: call-center-ingress
+  namespace: emergency-call-center
+  annotations:
+    # For NGINX Ingress Controller
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # WebSocket support
+    nginx.ingress.kubernetes.io/websocket-services: "voice-backend,signaling-server"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # CORS
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    # Rate limiting (optional)
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: call-center.example.com  # Change this to your domain
+    http:
+      paths:
+      # Admin Dashboard
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: admin-dashboard
+            port:
+              number: 80
+      # Voice Backend API
+      - path: /api/voice
+        pathType: Prefix
+        backend:
+          service:
+            name: voice-backend
+            port:
+              number: 8000
+      # WebSocket for calls
+      - path: /ws/call
+        pathType: Prefix
+        backend:
+          service:
+            name: voice-backend
+            port:
+              number: 8000
+      # ML Routing API
+      - path: /api/route
+        pathType: Prefix
+        backend:
+          service:
+            name: ml-routing
+            port:
+              number: 8002
+      # Signaling Server
+      - path: /api/signaling
+        pathType: Prefix
+        backend:
+          service:
+            name: signaling-server
+            port:
+              number: 3000
+  # TLS configuration (optional - add your cert)
+  # tls:
+  # - hosts:
+  #   - call-center.example.com
+  #   secretName: call-center-tls

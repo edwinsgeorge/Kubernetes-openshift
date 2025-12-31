@@ -1,0 +1,91 @@
+# Docker Compose for Local Development and Testing
+# This helps test the containerized services before K8s deployment
+
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:16-alpine
+    container_name: call-center-db
+    environment:
+      POSTGRES_DB: call_center_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  voice-backend:
+    build:
+      context: ./services/voice-backend
+      dockerfile: Dockerfile
+    container_name: voice-backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres123@postgresql:5432/call_center_db
+      SARVAM_API_KEY: ${SARVAM_API_KEY}
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      ROUTING_API_URL: http://ml-routing:8002/route-call
+    depends_on:
+      - postgresql
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ml-routing:
+    build:
+      context: ./services/ml-routing
+      dockerfile: Dockerfile
+    container_name: ml-routing
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8002/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  signaling-server:
+    build:
+      context: ./services/signaling-server
+      dockerfile: Dockerfile
+    container_name: signaling-server
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  admin-dashboard:
+    build:
+      context: ./services/admin-dashboard
+      dockerfile: Dockerfile
+    container_name: admin-dashboard
+    ports:
+      - "80:80"
+    depends_on:
+      - voice-backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: call-center-network

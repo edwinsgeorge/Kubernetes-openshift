@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --toastify-color-light: theme('colors.white');
+  --toastify-color-dark: theme('colors.dark.200');
+  --toastify-color-info: theme('colors.info');
+  --toastify-color-success: theme('colors.success');
+  --toastify-color-warning: theme('colors.warning');
+  --toastify-color-error: theme('colors.danger');
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
+}
+
+@layer base {
+  html {
+    @apply text-secondary-200;
+  }
+  
+  body {
+    @apply bg-dark-300 font-sans;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-dark-200 rounded-xl shadow-card p-6;
+  }
+  
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-700 hover:bg-secondary-800 text-white;
+  }
+  
+  .btn-danger {
+    @apply bg-danger hover:bg-red-600 text-white;
+  }
+  
+  .btn-success {
+    @apply bg-success hover:bg-green-600 text-white;
+  }
+  
+  .btn-outline {
+    @apply border border-secondary-600 hover:bg-secondary-700 text-secondary-300;
+  }
+  
+  .input {
+    @apply bg-dark-300 border border-secondary-700 rounded-lg px-4 py-2 text-secondary-200 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent;
+  }
+  
+  .badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+  
+  .badge-danger {
+    @apply bg-red-900/50 text-red-300;
+  }
+  
+  .badge-warning {
+    @apply bg-amber-900/50 text-amber-300;
+  }
+  
+  .badge-success {
+    @apply bg-green-900/50 text-green-300;
+  }
+  
+  .badge-info {
+    @apply bg-blue-900/50 text-blue-300;
+  }
+}

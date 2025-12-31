@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: emergency-call-center
+data:
+  # Service URLs
+  VOICE_BACKEND_URL: "http://voice-backend:8000"
+  ML_ROUTING_URL: "http://ml-routing:8002"
+  SIGNALING_SERVER_URL: "http://signaling-server:3000"
+
+  # Database config (non-sensitive)
+  DATABASE_HOST: "postgresql"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "call_center_db"
+
+  # External API URLs
+  SARVAM_STT_URL: "https://api.sarvam.ai/speech-to-text-translate"
+  SARVAM_TTS_URL: "https://api.sarvam.ai/text-to-speech"
+  SARVAM_TRANSLATE_URL: "https://api.sarvam.ai/translate"
+
+  # Application settings
+  TARGET_LANGUAGE_CODE: "ml-IN"
+  LOG_LEVEL: "INFO"
