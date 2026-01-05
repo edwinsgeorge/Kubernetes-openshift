@@ -2,6 +2,9 @@
 
 AI-powered Emergency Call Center with Voice AI, ML Routing, and Real-time Dashboard.
 
+<img width="1906" height="916" alt="image" src="https://github.com/user-attachments/assets/413098b0-4e6b-4631-a103-85d2379b0be6" />
+
+
 ## Project Structure
 
 ```
