@@ -5,3 +5,4 @@ python-multipart==0.0.20
 loguru==0.7.3
 dotenv==0.9.9
 groq==0.22.0
+asyncpg==0.30.0

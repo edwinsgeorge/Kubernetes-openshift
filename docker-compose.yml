@@ -1,8 +1,6 @@
 # Docker Compose for Local Development and Testing
 # This helps test the containerized services before K8s deployment
 
-version: '3.8'
-
 services:
   postgresql:
     image: postgres:16-alpine
@@ -24,7 +22,7 @@ services:
 
   voice-backend:
     build:
-      context: ./services/voice-backend
+      context: ./voicebot
       dockerfile: Dockerfile
     container_name: voice-backend
     ports:
@@ -44,7 +42,7 @@ services:
 
   ml-routing:
     build:
-      context: ./services/ml-routing
+      context: ./ml-model
       dockerfile: Dockerfile
     container_name: ml-routing
     ports:
@@ -57,7 +55,7 @@ services:
 
   signaling-server:
     build:
-      context: ./services/signaling-server
+      context: ./backend
       dockerfile: Dockerfile
     container_name: signaling-server
     ports:
@@ -70,7 +68,7 @@ services:
 
   admin-dashboard:
     build:
-      context: ./services/admin-dashboard
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: admin-dashboard
     ports:

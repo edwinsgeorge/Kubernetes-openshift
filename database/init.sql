@@ -2,7 +2,8 @@
 -- PostgreSQL initialization script
 
 -- Create database (if not exists)
-CREATE DATABASE IF NOT EXISTS call_center_db;
+CREATE DATABASE call_center_db;
+
 
 -- Connect to database
 \c call_center_db;
